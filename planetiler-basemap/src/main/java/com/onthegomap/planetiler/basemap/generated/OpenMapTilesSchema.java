@@ -516,7 +516,7 @@ public class OpenMapTilesSchema {
       public static final Set<String> CLASS_VALUES = Set.of("railway", "cemetery", "military", "residential",
         "commercial", "industrial", "garages", "retail", "bus_station", "school", "university", "kindergarten",
         "college", "library", "hospital", "stadium", "pitch", "playground", "track", "theme_park", "zoo", "suburb",
-        "quarter", "neighbourhood", "dam");
+        "quarter", "neighbourhood", "dam", "mountain_pass");
     }
 
     /** Complex mappings to generate attribute values from OSM element tags in the landuse layer. */
@@ -1852,6 +1852,7 @@ public class OpenMapTilesSchema {
         MultiExpression.entry("art_gallery", matchAny("subclass", "art", "artwork", "gallery", "arts_centre")),
         MultiExpression.entry("clothing_store", matchAny("subclass", "bag", "clothes")),
         MultiExpression.entry("swimming", matchAny("subclass", "swimming_area", "swimming")),
+        MultiExpression.entry("mountain_pass", matchAny("mapping_key", "mountain_pass")),
         MultiExpression.entry("castle", matchAny("subclass", "castle", "ruins"))));
     }
   }

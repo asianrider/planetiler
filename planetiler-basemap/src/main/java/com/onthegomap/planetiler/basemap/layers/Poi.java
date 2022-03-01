@@ -120,9 +120,13 @@ public class Poi implements
   }
 
   private int minzoom(String subclass, String mappingKey) {
-    boolean lowZoom = ("station".equals(subclass) && "railway".equals(mappingKey)) ||
-      "halt".equals(subclass) || "ferry_terminal".equals(subclass);
-    return lowZoom ? 12 : 14;
+    if ("mountain_pass".equals(mappingKey)) {
+        return 8;
+    } else {
+        boolean lowZoom = ("station".equals(subclass) && "railway".equals(mappingKey)) ||
+        "halt".equals(subclass) || "ferry_terminal".equals(subclass);
+      return lowZoom ? 12 : 14;
+    }
   }
 
   @Override
@@ -173,6 +177,7 @@ public class Poi implements
       .setAttr(Fields.LAYER, nullIfLong(element.layer(), 0))
       .setAttr(Fields.LEVEL, Parse.parseLongOrNull(element.source().getTag("level")))
       .setAttr(Fields.INDOOR, element.indoor() ? 1 : null)
+      .setAttr("ele", element.source().getTag("ele"))
       .putAttrs(LanguageUtils.getNames(element.source().tags(), translations))
       .setPointLabelGridPixelSize(14, 64)
       .setSortKey(rankOrder)

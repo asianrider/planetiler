@@ -800,7 +800,7 @@ public class Tables {
       this(source.getString("name"), source.getString("name:en"), source.getString("name:de"),
         source.getString(mappingKey), mappingKey, source.getString("station"), source.getString("funicular"),
         source.getString("information"), source.getString("uic_ref"), source.getString("religion"),
-        source.getLong("level"), source.getBoolean("indoor"), source.getLong("layer"), source.getString("sport"),
+        source.getLong("level"), source.getBoolean("indoor"), source.getLong("layer"), source.getString("sport"),  
         source);
     }
 
@@ -843,7 +843,8 @@ public class Tables {
         "toboggan", "volleyball", "water_ski", "yoga"),
       matchAny("tourism", "alpine_hut", "aquarium", "artwork", "attraction", "bed_and_breakfast", "camp_site",
         "caravan_site", "chalet", "gallery", "guest_house", "hostel", "hotel", "information", "motel", "museum",
-        "picnic_site", "theme_park", "viewpoint", "zoo"), matchAny("waterway", "dock")), matchType("point"));
+        "picnic_site", "theme_park", "viewpoint", "zoo"), matchAny("waterway", "dock"), matchAny("mountain_pass", "yes")), 
+        matchType("point"));
 
     /**
      * Interface for layer implementations to extend to subscribe to OSM elements filtered and parsed as {@link
