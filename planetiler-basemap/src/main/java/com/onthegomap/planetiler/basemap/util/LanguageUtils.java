@@ -59,7 +59,6 @@ public class LanguageUtils {
   private static final Pattern EMPTY_PARENS = Pattern.compile("(\\([ -.]*\\)|\\[[ -.]*])");
   private static final Pattern LEADING_TRAILING_JUNK = Pattern.compile("(^\\s*([./-]\\s*)*|(\\s+[./-])*\\s*$)");
   private static final Pattern WHITESPACE = Pattern.compile("\\s+");
-  private static final Set<String> EN_DE_NAME_KEYS = Set.of("name:en", "name:de");
 
   private static void putIfNotEmpty(Map<String, Object> dest, String key, Object value) {
     if (value != null && !value.equals("")) {
@@ -123,11 +122,10 @@ public class LanguageUtils {
     String name = string(tags.get("name"));
     String intName = string(tags.get("int_name"));
     String nameEn = string(tags.get("name:en"));
-    String nameDe = string(tags.get("name:de"));
 
     boolean isLatin = containsOnlyLatinCharacters(name);
     String latin = isLatin ? name
-      : Stream.concat(Stream.of(nameEn, intName, nameDe), getAllNameTranslationsBesidesEnglishAndGerman(tags))
+      : Stream.concat(Stream.of(nameEn, intName), getAllNameTranslationsBesidesEnglish(tags))
         .filter(LanguageUtils::containsOnlyLatinCharacters)
         .findFirst().orElse(null);
     if (latin == null && translations != null && translations.getShouldTransliterate()) {
@@ -139,9 +137,13 @@ public class LanguageUtils {
     }
 
     putIfNotEmpty(result, "name", name);
-    putIfNotEmpty(result, "name_en", coalesce(nameEn, name));
-    putIfNotEmpty(result, "name_de", coalesce(nameDe, name, nameEn));
-    putIfNotEmpty(result, "name:latin", latin);
+    putIfNotEmpty(result, "name_en", coalesce(nameEn, intName, latin, name));
+    putIfNotEmpty(result, "name_de", coalesce(string(tags.get("name:de")), intName, latin, name));
+    putIfNotEmpty(result, "name_fr", coalesce(string(tags.get("name:fr")), intName, latin, name));
+    putIfNotEmpty(result, "name_it", coalesce(string(tags.get("name:it")), intName, latin, name));
+    putIfNotEmpty(result, "name_es", coalesce(string(tags.get("name:es")), intName, latin, name));
+    putIfNotEmpty(result, "name_ru", coalesce(string(tags.get("name:ru")), intName, latin, name));
+    putIfNotEmpty(result, "name_ja", coalesce(string(tags.get("name:ja")), intName, latin, name));
     putIfNotEmpty(result, "name:nonlatin", nonLatin);
     putIfNotEmpty(result, "name_int", coalesce(
       intName,
@@ -157,11 +159,10 @@ public class LanguageUtils {
     return result;
   }
 
-  private static Stream<String> getAllNameTranslationsBesidesEnglishAndGerman(Map<String, Object> tags) {
+  private static Stream<String> getAllNameTranslationsBesidesEnglish(Map<String, Object> tags) {
     return tags.entrySet().stream()
       .filter(e -> {
-        String key = e.getKey();
-        return key.startsWith("name:") && !EN_DE_NAME_KEYS.contains(key);
+        return e.getKey() == "name:en";
       })
       .map(Map.Entry::getValue)
       .map(LanguageUtils::string);
