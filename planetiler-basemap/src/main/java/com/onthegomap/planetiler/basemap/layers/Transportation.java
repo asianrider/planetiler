@@ -371,6 +371,8 @@ public class Transportation implements
         .setAttr(Fields.SUBCLASS, highwaySubclass(highwayClass, element.publicTransport(), highway))
         .setAttr(Fields.BRUNNEL, brunnel(element.isBridge(), element.isTunnel(), element.isFord()))
         .setAttr(Fields.NETWORK, networkType != null ? networkType.name : null)
+        .setAttr("winter_road", element.source().getTag("winter_road"))
+        .setAttr("ice_road", element.source().getTag("ice_road"))
         // z8+
         .setAttrWithMinzoom(Fields.EXPRESSWAY, element.expressway() && !"motorway".equals(highway) ? 1 : null, 8)
         // z9+
