@@ -500,14 +500,11 @@ public class Transportation implements
     features.line(LAYER_NAME).setBufferPixels(BUFFER_SIZE)
       .setAttr(Fields.CLASS, element.shipway()) // "ferry"
       // no subclass
-      .setAttr(Fields.SERVICE, service(element.service()))
-      .setAttr(Fields.ONEWAY, nullIfInt(element.isOneway(), 0))
-      .setAttr(Fields.RAMP, element.isRamp() ? 1L : null)
-      .setAttr(Fields.BRUNNEL, brunnel(element.isBridge(), element.isTunnel(), element.isFord()))
+      .setAttr("motor_vehicle", element.source().getTag("motor_vehicle"))
       .setAttr(Fields.LAYER, nullIfLong(element.layer(), 0))
       .setSortKey(element.zOrder())
       .setMinPixelSize(0) // merge during post-processing, then limit by size
-      .setMinZoom(11);
+      .setMinZoom(5);
   }
 
   @Override
