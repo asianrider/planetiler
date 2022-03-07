@@ -237,16 +237,16 @@ public class Boundary implements
         }
       }
 
-      if (minAdminLevel <= 10) {
+  boolean maritime = feature.getBoolean("maritime") ||
+      feature.hasTag("natural", "coastline") ||
+      feature.hasTag("boundary_type", "maritime");
+  if (!maritime && minAdminLevel <= 10) {
         boolean wayIsDisputed = isDisputed(feature.tags());
         disputed |= wayIsDisputed;
         if (wayIsDisputed) {
           disputedName = disputedName == null ? feature.getString("name") : disputedName;
           claimedBy = claimedBy == null ? feature.getString("claimed_by") : claimedBy;
         }
-        boolean maritime = feature.getBoolean("maritime") ||
-          feature.hasTag("natural", "coastline") ||
-          feature.hasTag("boundary_type", "maritime");
         int minzoom =
           (maritime && minAdminLevel == 2) ? 4 :
             minAdminLevel <= 4 ? 5 :
