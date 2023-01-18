@@ -1,1 +1,1 @@
-docker run --rm -it -v /Users/laurent/dev/planetiler:/data -p 8000:80 tileserver-gl-light
+sudo docker run --rm -it -v $(pwd):/data -p 80:8080 maptiler/tileserver-gl-light --config config.json
