@@ -120,41 +120,45 @@ public class LanguageUtils {
     Map<String, Object> result = new HashMap<>();
 
     String name = string(tags.get("name"));
-    String intName = string(tags.get("int_name"));
-    String nameEn = string(tags.get("name:en"));
+    // String intName = string(tags.get("int_name"));
+    // String nameEn = string(tags.get("name:en"));
 
-    boolean isLatin = containsOnlyLatinCharacters(name);
-    String latin = isLatin ? name
-      : Stream.concat(Stream.of(nameEn, intName), getAllNameTranslationsBesidesEnglish(tags))
-        .filter(LanguageUtils::containsOnlyLatinCharacters)
-        .findFirst().orElse(null);
-    if (latin == null && translations != null && translations.getShouldTransliterate()) {
-      latin = transliteratedName(tags);
-    }
-    String nonLatin = isLatin ? null : removeLatinCharacters(name);
-    if (coalesce(nonLatin, "").equals(latin)) {
-      nonLatin = null;
-    }
+    // boolean isLatin = containsOnlyLatinCharacters(name);
+    // String latin = isLatin ? name
+    //   : Stream.concat(Stream.of(nameEn, intName), getAllNameTranslationsBesidesEnglish(tags))
+    //     .filter(LanguageUtils::containsOnlyLatinCharacters)
+    //     .findFirst().orElse(null);
+    // if (latin == null && translations != null && translations.getShouldTransliterate()) {
+    //   latin = transliteratedName(tags);
+    // }
+    // String nonLatin = isLatin ? null : removeLatinCharacters(name);
+    // if (coalesce(nonLatin, "").equals(latin)) {
+    //   nonLatin = null;
+    // }
 
     putIfNotEmpty(result, "name", name);
-    putIfNotEmpty(result, "name_en", coalesce(nameEn, intName, latin, name));
-    putIfNotEmpty(result, "name_de", coalesce(string(tags.get("name:de")), intName, latin, name));
-    putIfNotEmpty(result, "name_fr", coalesce(string(tags.get("name:fr")), intName, latin, name));
-    putIfNotEmpty(result, "name_it", coalesce(string(tags.get("name:it")), intName, latin, name));
-    putIfNotEmpty(result, "name_es", coalesce(string(tags.get("name:es")), intName, latin, name));
-    putIfNotEmpty(result, "name_ru", coalesce(string(tags.get("name:ru")), intName, latin, name));
-    putIfNotEmpty(result, "name_ja", coalesce(string(tags.get("name:ja")), intName, latin, name));
-    putIfNotEmpty(result, "name:nonlatin", nonLatin);
-    putIfNotEmpty(result, "name_int", coalesce(
-      intName,
-      nameEn,
-      latin,
-      name
-    ));
+    putIfNotEmpty(result, "name_en", string(tags.get("name:en")));
+    putIfNotEmpty(result, "name_de", string(tags.get("name:de")));
+    putIfNotEmpty(result, "name_fr", string(tags.get("name:fr")));
+    putIfNotEmpty(result, "name_it", string(tags.get("name:it")));
+    putIfNotEmpty(result, "name_es", string(tags.get("name:es")));
+    putIfNotEmpty(result, "name_ru", string(tags.get("name:ru")));
+    putIfNotEmpty(result, "name_ja", string(tags.get("name:ja")));
+    putIfNotEmpty(result, "name_ar", string(tags.get("name:ar")));
+    putIfNotEmpty(result, "name_pt", string(tags.get("name:pt")));
+    putIfNotEmpty(result, "name_nl", string(tags.get("name:nl")));
+    putIfNotEmpty(result, "name_zh", string(tags.get("name:zh")));
+    // putIfNotEmpty(result, "name:nonlatin", nonLatin);
+    // putIfNotEmpty(result, "name_int", coalesce(
+    //   intName,
+    //   nameEn,
+    //   latin,
+    //   name
+    // ));
 
-    if (translations != null) {
-      translations.addTranslations(result, tags);
-    }
+    // if (translations != null) {
+    //   translations.addTranslations(result, tags);
+    // }
 
     return result;
   }
