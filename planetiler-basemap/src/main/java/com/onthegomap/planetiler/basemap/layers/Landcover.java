@@ -127,18 +127,18 @@ public class Landcover implements
         .setAttr(Fields.CLASS, clazz)
         .setAttr(Fields.SUBCLASS, subclass)
         .setNumPointsAttr(TEMP_NUM_POINTS_ATTR)
-        .setMinZoom(WOOD_OR_FOREST.contains(subclass) ? 9 : 7);
+        .setMinZoom(WOOD_OR_FOREST.contains(subclass) ? 9 : 3);
     }
   }
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    if (zoom < 7 || zoom > 13) {
+    if (zoom < 3 || zoom > 13) {
       for (var item : items) {
         item.attrs().remove(TEMP_NUM_POINTS_ATTR);
       }
       return items;
-    } else { // z7-13
+    } else { // z3-13
       // merging only merges polygons with the same attributes, so use this temporary key
       // to separate features into layers that will be merged separately
       String tempGroupKey = "_group";
