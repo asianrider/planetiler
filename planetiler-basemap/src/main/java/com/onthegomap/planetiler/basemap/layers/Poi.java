@@ -121,7 +121,7 @@ public class Poi implements
 
   private int minzoom(String subclass, String mappingKey) {
     if ("border_control".equals(subclass)) {
-      return 5;
+      return 6;
     } else if ("mountain_pass".equals(mappingKey)) {
         return 8;
     } else {
