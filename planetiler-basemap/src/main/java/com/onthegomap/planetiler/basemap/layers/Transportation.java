@@ -416,7 +416,7 @@ public class Transportation implements
     if ("pier".equals(element.manMade())) {
       minzoom = 13;
     } else if ("residential".equals(highway)) {
-      minzoom = 12;
+      minzoom = 7;
     } else if ("unclassified".equals(highway)) {
       minzoom = 7;
     } else {
