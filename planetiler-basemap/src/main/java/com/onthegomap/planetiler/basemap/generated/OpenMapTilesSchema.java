@@ -42,6 +42,7 @@ import static com.onthegomap.planetiler.expression.Expression.and;
 import static com.onthegomap.planetiler.expression.Expression.matchAny;
 import static com.onthegomap.planetiler.expression.Expression.or;
 
+import com.onthegomap.planetiler.basemap.BasemapProfile;
 import com.onthegomap.planetiler.basemap.Layer;
 import com.onthegomap.planetiler.config.PlanetilerConfig;
 import com.onthegomap.planetiler.expression.MultiExpression;
@@ -72,6 +73,7 @@ public class OpenMapTilesSchema {
   public static List<Layer> createInstances(Translations translations, PlanetilerConfig config, Stats stats) {
     return List.of(
       new com.onthegomap.planetiler.basemap.layers.Water(translations, config, stats),
+      new com.onthegomap.planetiler.basemap.layers.Country(translations, config, stats),
       new com.onthegomap.planetiler.basemap.layers.Waterway(translations, config, stats),
       new com.onthegomap.planetiler.basemap.layers.Landcover(translations, config, stats),
       new com.onthegomap.planetiler.basemap.layers.Landuse(translations, config, stats),
@@ -89,6 +91,26 @@ public class OpenMapTilesSchema {
       new com.onthegomap.planetiler.basemap.layers.AerodromeLabel(translations, config, stats)
     );
   }
+
+  public interface Country extends Layer {
+
+    double BUFFER_SIZE = 4.0;
+    String LAYER_NAME = "country";
+
+    @Override
+    default String name() {
+      return LAYER_NAME;
+    }
+    final class FieldMappings {
+
+      public static final MultiExpression<String> Class = MultiExpression.of(
+        List.of(MultiExpression.entry("dock", matchAny("waterway", "dock")),
+          MultiExpression.entry("river", or(matchAny("water", "river"), matchAny("waterway", "riverbank"))),
+          MultiExpression.entry("lake", matchAny("waterway", "")), MultiExpression.entry("ocean", FALSE)));
+    }
+
+   }
+
 
   /**
    * Water polygons representing oceans and lakes. Covered watered areas are excluded (<code>covered=yes</code>). On low

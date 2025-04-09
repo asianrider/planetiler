@@ -1,0 +1,104 @@
+/*
+Copyright (c) 2021, MapTiler.com & OpenMapTiles contributors.
+All rights reserved.
+
+Code license: BSD 3-Clause License
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Design license: CC-BY 4.0
+
+See https://github.com/openmaptiles/openmaptiles/blob/master/LICENSE.md for details on usage
+*/
+package com.onthegomap.planetiler.basemap.layers;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.onthegomap.planetiler.FeatureCollector;
+import com.onthegomap.planetiler.basemap.BasemapProfile;
+import com.onthegomap.planetiler.basemap.generated.OpenMapTilesSchema;
+import com.onthegomap.planetiler.basemap.generated.Tables;
+import com.onthegomap.planetiler.config.PlanetilerConfig;
+import com.onthegomap.planetiler.expression.MultiExpression;
+import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.stats.Stats;
+import com.onthegomap.planetiler.util.Translations;
+
+/**
+ * Defines the logic for generating map elements for oceans and lakes in the {@code country} layer from source features.
+ * <p>
+ * This class is ported to Java from <a href="https://github.com/openmaptiles/openmaptiles/tree/master/layers/water">OpenMapTiles
+ * water sql files</a>.
+ */
+public class Country implements
+  OpenMapTilesSchema.Country,
+  Tables.OsmWaterPolygon.Handler,
+  BasemapProfile.NaturalEarthProcessor,
+  BasemapProfile.OsmCountryPolygonProcessor {
+  private static final Logger LOGGER = LoggerFactory.getLogger(Landcover.class);
+
+  /*
+   * At low zoom levels, use natural earth for oceans and major lakes, and at high zoom levels
+   * use OpenStreetMap data. OpenStreetMap data contains smaller bodies of water, but not
+   * large ocean polygons. For oceans, use https://osmdata.openstreetmap.de/data/water-polygons.html
+   * which infers ocean polygons by preprocessing all coastline elements.
+   */
+
+  private final MultiExpression.Index<String> classMapping;
+
+  public Country(Translations translations, PlanetilerConfig config, Stats stats) {
+    this.classMapping = FieldMappings.Class.index();
+  }
+
+  @Override
+  public void processNaturalEarth(String table, SourceFeature feature, FeatureCollector features) {
+    if (table.equals("ne_50m_admin_0_countries")) {
+      features.polygon(LAYER_NAME).setBufferPixels(BUFFER_SIZE)
+      .setAttr("class", "ne_country")
+      .setAttr("sublass", "50m")
+      .setZoomRange(0, 5);
+      return;
+    }
+  }
+
+  @Override
+  public void processOsmCountry(SourceFeature feature, FeatureCollector features) {
+    features.polygon(LAYER_NAME)
+      .setBufferPixels(BUFFER_SIZE)
+      .setAttr("class", "osm_country")
+      .setMinZoom(6);
+  }
+
+  @Override
+  public void process(Tables.OsmWaterPolygon element, FeatureCollector features) {
+      features.polygon(LAYER_NAME)
+        .setBufferPixels(BUFFER_SIZE)
+        .setMinPixelSizeBelowZoom(11, 2)
+        .setMinZoom(6)
+        .setAttr("class", "from_water_polygon");
+  }
+}

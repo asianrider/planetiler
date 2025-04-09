@@ -22,6 +22,9 @@ import com.onthegomap.planetiler.util.Translations;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Delegates the logic for generating a map to individual implementations in the {@code layers} package.
  * <p>
@@ -46,12 +49,14 @@ public class BasemapProfile extends ForwardingProfile {
   // IDs used in stats and logs for each input source, as well as argument/config file overrides to source locations
   public static final String LAKE_CENTERLINE_SOURCE = "lake_centerlines";
   public static final String WATER_POLYGON_SOURCE = "water_polygons";
+  public static final String COUNTRY_POLYGON_SOURCE = "country_polygons";
   public static final String NATURAL_EARTH_SOURCE = "natural_earth";
   public static final String OSM_SOURCE = "osm";
   /** Index to efficiently find the imposm3 "table row" constructor from an OSM element based on its tags. */
   private final MultiExpression.Index<RowDispatch> osmMappings;
   /** Index variant that filters out any table only used by layers that implement IgnoreWikidata class. */
   private final MultiExpression.Index<Boolean> wikidataMappings;
+  private static final Logger LOGGER = LoggerFactory.getLogger(BasemapProfile.class);
 
   public BasemapProfile(Planetiler runner) {
     this(runner.translations(), runner.config(), runner.stats());
@@ -65,8 +70,11 @@ public class BasemapProfile extends ForwardingProfile {
     List<Handler> layers = new ArrayList<>();
     Transportation transportationLayer = null;
     TransportationName transportationNameLayer = null;
+    LOGGER.info("Only Layers: " + onlyLayers);
     for (Layer layer : OpenMapTilesSchema.createInstances(translations, config, stats)) {
+      LOGGER.info("Testing layer handler: " + layer.getClass().getName());
       if ((onlyLayers.isEmpty() || onlyLayers.contains(layer.name())) && !excludeLayers.contains(layer.name())) {
+        LOGGER.info("Adding layer handler: " + layer.getClass().getName());
         layers.add(layer);
         registerHandler(layer);
         if (layer instanceof TransportationName transportationName) {
@@ -89,9 +97,13 @@ public class BasemapProfile extends ForwardingProfile {
 
     // register per-source input element handlers
     for (Handler handler : layers) {
+      LOGGER.info("Register layer handler: " + handler.getClass().getName());
       if (handler instanceof NaturalEarthProcessor processor) {
         registerSourceHandler(NATURAL_EARTH_SOURCE,
           (source, features) -> processor.processNaturalEarth(source.getSourceLayer(), source, features));
+      }
+      if (handler instanceof OsmCountryPolygonProcessor processor) {
+        registerSourceHandler(COUNTRY_POLYGON_SOURCE, processor::processOsmCountry);
       }
       if (handler instanceof OsmWaterPolygonProcessor processor) {
         registerSourceHandler(WATER_POLYGON_SOURCE, processor::processOsmWater);
@@ -226,6 +238,11 @@ public class BasemapProfile extends ForwardingProfile {
      */
     void processOsmWater(SourceFeature feature, FeatureCollector features);
   }
+
+  public interface OsmCountryPolygonProcessor {
+    void processOsmCountry(SourceFeature feature, FeatureCollector features);
+  }
+
 
   /** Layers should implement this interface to subscribe to every OSM element. */
   public interface OsmAllProcessor {
