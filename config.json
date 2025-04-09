@@ -1,15 +1,15 @@
 {
   "options": {
     "paths": {
-      "root": "/app/node_modules/tileserver-gl-styles",
+      "root": "",
       "fonts": "fonts",
       "styles": "styles",
-      "mbtiles": "/data"
+      "mbtiles": ""
     }
   },
   "styles": {
-    "klokantech-basic": {
-      "style": "klokantech-basic/style.json",
+    "ho-light": {
+      "style": "ho-light.json",
       "tilejson": {
         "bounds": [
           -180,
@@ -19,8 +19,8 @@
         ]
       }
     },
-    "osm-bright": {
-      "style": "/data/osm-bright.json",
+    "detailed": {
+      "style": "detailed.json",
       "tilejson": {
         "bounds": [
           -180,
@@ -30,8 +30,8 @@
         ]
       }
     },
-    "osm-liberty": {
-      "style": "/data/osm-liberty.json",
+    "simplified": {
+      "style": "simplified.json",
       "tilejson": {
         "bounds": [
           -180,
@@ -44,7 +44,7 @@
   },
   "data": {
     "v3": {
-      "mbtiles": "tiles.mbtiles"
+      "mbtiles": "output.mbtiles"
     }
   }
 }
