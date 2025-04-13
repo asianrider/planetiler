@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-java -Xmx100g -Xms100g \
+java -Xmx170g -Xms170g \
   -XX:OnOutOfMemoryError="kill -9 %p" \
   -jar planetiler.jar \
   `# Download the latest planet.osm.pbf from s3://osm-pds bucket` \
