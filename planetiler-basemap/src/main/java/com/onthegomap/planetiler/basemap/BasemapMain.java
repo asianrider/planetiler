@@ -39,6 +39,9 @@ public class BasemapMain {
       .addShapefileSource(BasemapProfile.WATER_POLYGON_SOURCE,
         sourcesDir.resolve("water-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
+      .addShapefileSource(BasemapProfile.COUNTRY_POLYGON_SOURCE,
+        sourcesDir.resolve("land-polygons-split-4326.zip"),
+        "https://osmdata.openstreetmap.de/download/land-polygons-split-4326.zip")
       .addNaturalEarthSource(BasemapProfile.NATURAL_EARTH_SOURCE,
         sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
         "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip")
